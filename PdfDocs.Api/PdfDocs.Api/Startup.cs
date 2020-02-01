@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PdfDocs.Domain.Services;
 
 namespace PdfDocs.Api
 {
@@ -25,6 +26,7 @@ namespace PdfDocs.Api
 
             services.AddData(Configuration["PdfDocsDb"]);
             services.AddTransformers();
+            services.AddValidation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
