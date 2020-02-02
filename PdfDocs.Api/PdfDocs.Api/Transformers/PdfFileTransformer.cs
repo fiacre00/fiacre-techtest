@@ -1,5 +1,6 @@
 ﻿using PdfDocs.Api.Models;
 using PdfDocs.Domain.Entities;
+using System;
 
 namespace PdfDocs.Api.Transformers
 {
@@ -12,7 +13,7 @@ namespace PdfDocs.Api.Transformers
                 Location = source.Location,
                 FileName = source.FileName,
                 FileSize = source.FileSize,
-                FileContent = source.FileContent,
+                FileContent = (source.FileContent == null) ? null: Convert.ToBase64String(source.FileContent, Base64FormattingOptions.None),
                 FileOrdinal = source.FileOrdinal
             };
         }

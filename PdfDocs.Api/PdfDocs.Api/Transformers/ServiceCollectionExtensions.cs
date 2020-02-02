@@ -11,7 +11,9 @@ namespace PdfDocs.Api.Transformers
         {
             return services
                 .AddSingleton<IPdfFileTransformerService, PdfFileTransformerService>()
+                .AddSingleton<IFileListTransformerService, FileListTransformerService>()
                 .AddSingleton<ITransformer<PdfFile, PdfFileDto>, PdfFileTransformer>()
+                .AddSingleton<ITransformer<FileList, FileListDto>, FileListTransformer>()
                 ;
         }
     }

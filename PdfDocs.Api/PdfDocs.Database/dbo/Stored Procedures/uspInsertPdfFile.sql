@@ -1,7 +1,7 @@
 ﻿
-CREATE PROCEDURE uspInsertPdfFile
+CREATE PROCEDURE [dbo].[uspInsertPdfFile]
 	@FileName NVARCHAR(256),
-	@FileContent NVARCHAR(MAX)
+	@FileContent VARBINARY(MAX)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -20,7 +20,7 @@ BEGIN
 		 VALUES
 			   (NEWID()
 			   ,@FileName
-			   ,DATALENGTH(@FileContent) / 4 * 3
+			   ,DATALENGTH(@FileContent)
 			   ,@FileContent
 			   ,@FileOrdinal
 			   ,0);

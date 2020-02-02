@@ -1,5 +1,4 @@
 ﻿using PdfDocs.Api.Models;
-using PdfDocs.Api.Transformers;
 using PdfDocs.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -17,27 +16,36 @@ namespace PdfDocs.Api.Tests.Controllers
         public class CommandsControllerTestUpload : CommandsControllerFixture
         {
             [Fact]
-            public async Task Uplpoad_Uses_RepositoryUpload_With_File()
+            public async Task Upload_Uses_RepositoryUpload_With_File()
             {
-                
+
                 var pdfFile = new PdfFileDto
                 {
                     FileContent = "JVBERgo=",
                     FileName = "my.pdf"
                 };
-                                                               
+
+                var decoded = Convert.FromBase64String(pdfFile.FileContent);
+
                 var mock = new Mock<IDecodeValidateService>();
-                
-                mock.Setup(f => f.DecodeValidate(pdfFile.FileContent)).Returns(new Domain.Entities.DecodeValidateResponse { IsValidPdf = true });
-                
-                var response = await CreateSut(decodeValidateService:mock.Object).Upload(pdfFile);
+                var repositoryMock = new Mock<IPdfFileRepository>();
+
+                mock.Setup(f => f.DecodeValidate(pdfFile.FileContent)).Returns(new Domain.Entities.DecodeValidateResponse { IsValidPdf = true, Decoded = decoded });
+
+                var response = await CreateSut(pdfFileRepository: repositoryMock.Object, decodeValidateService: mock.Object).Upload(pdfFile);
 
                 (response.Result as ObjectResult).StatusCode.ShouldBe(StatusCodes.Status201Created);
 
                 mock.Verify(m => m.DecodeValidate(pdfFile.FileContent), Times.Once());
+
+                repositoryMock.Verify(m => m.UploadPdfFile(pdfFile.FileName,
+                   decoded), Times.Once());
             }
 
-           
+            
+
+            
+
         }
     }
 }

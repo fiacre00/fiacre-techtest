@@ -4,6 +4,8 @@ using PdfDocs.Domain;
 using PdfDocs.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -43,7 +45,7 @@ namespace PdfDocs.Api.Controllers
                 }
                            
                 return (response.IsValidPdf) ? StatusCode(StatusCodes.Status201Created,""): 
-                    StatusCode(StatusCodes.Status406NotAcceptable,response.ValidationError);
+                    StatusCode(StatusCodes.Status400BadRequest, response.ValidationError);
             }
             catch(Exception ex)
             {
@@ -54,16 +56,40 @@ namespace PdfDocs.Api.Controllers
 
         [HttpDelete]
         [Route("{location:guid}/delete")]
-        public async Task<int> Delete([FromRoute]Guid location)
+        public async Task<ActionResult<object>> Delete([FromRoute]Guid location)
         {
-            return StatusCodes.Status200OK;
+           
+            try
+            {
+                var result = await _pdfFileRepository.DeletePdfFile(location);
+                return (result) ? StatusCode(StatusCodes.Status200OK, "") :
+                    StatusCode(StatusCodes.Status400BadRequest, "File not found");
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpPatch]
         [Route("rearrange")]
-        public async Task<int> Rearrange([FromBody]FileListDto fileList)
+        public async Task<ActionResult<object>> Rearrange([FromBody]FileListDto fileList)
         {
-            return StatusCodes.Status200OK;
+            try
+            {
+                var locations = from pdfFile in fileList.PdfFiles
+                           select pdfFile.Location;
+
+            await _pdfFileRepository.RearrangePdfFileList(locations);
+
+                return StatusCode(StatusCodes.Status200OK,"");
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
 

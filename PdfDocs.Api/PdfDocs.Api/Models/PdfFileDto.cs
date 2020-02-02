@@ -1,8 +1,10 @@
-﻿namespace PdfDocs.Api.Models
+﻿using System;
+
+namespace PdfDocs.Api.Models
 {
     public class PdfFileDto
     {
-        public string Location { get; set; }
+        public Guid Location { get; set; }
 
         public string FileName { get; set; }
 
